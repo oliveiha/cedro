@@ -1,0 +1,56 @@
+- name: create new sudoer user -
+  hosts: oms-db
+  become: true
+  gather_facts: no
+  vars:
+    user_name: operacoes
+    password: cedro@54321
+    user_group: admins
+
+  tasks:
+  - name: Setup | alter sshd_config
+    command: sed -i 's|[#]*PasswordAuthentication no|PasswordAuthentication yes|g' /etc/ssh/sshd_config
+    sudo: true
+
+  - name: Setup | Alter sshd_config_pam
+    command: sed -i 's|UsePAM no|UsePAM yes|g' /etc/ssh/sshd_config
+    sudo: true
+
+  - name: show hosts
+    debug: msg="play_hosts={{play_hosts}}"
+
+  - group:
+      name: "{{item}}"
+      state: present
+    with_items:
+    - "{{user_group}}"
+
+  - user:
+      name: "{{user_name}}"
+      shell: /bin/bash
+      createhome: yes
+      group: "{{user_group}}"
+      home: "/home/{{user_name}}"
+      state: present
+      append: yes
+
+  - name: Restart sshd
+    service:
+      name: sshd
+      state: restarted
+
+
+  - name: Setup | set user password
+    shell: usermod -p $(echo '{{ password }}' | openssl passwd -1 -stdin) {{ user_name }}
+    sudo: true
+
+  - name: "set {{user_group}} group as sudoer without password"
+    lineinfile:
+      dest: /etc/sudoers
+      state: present
+      regexp: '^%{{user_group}}'
+      line: '%{{user_group}} ALL=(ALL) NOPASSWD: ALL'
+
+#  - name: setup alter password next logon
+#    command: chage -d 0 {{ user_name }}
+#    sudo: true

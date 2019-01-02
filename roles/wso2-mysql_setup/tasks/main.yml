@@ -1,0 +1,153 @@
+---
+# tasks file for mysql_setup
+
+# Allow remote connections 
+- mysql_user:
+    name: "{{ MYSQL_ADMIN_USER }}"
+    host: "{{ ALLOWED_CLIENTS | default('127.0.0.1') }}"
+    password: "{{ MYSQL_ADMIN_PASS }}"
+    append_privs: yes
+    priv: '*.*:ALL,GRANT'
+    state: present
+    login_host: "127.0.0.1"
+    login_user: "{{ MYSQL_ADMIN_USER }}"
+    login_password: "{{ MYSQL_ADMIN_PASS }}"
+  become_user: "{{ user }}"
+
+# Allow remote connections from ansible server
+- mysql_user:
+    name: "{{ MYSQL_ADMIN_USER }}"
+    host: "d1l-ansdap1.devry.edu" 
+    password: "{{ MYSQL_ADMIN_PASS }}"
+    append_privs: yes
+    priv: '*.*:ALL,GRANT'
+    state: present
+    login_host: "127.0.0.1"
+    login_user: "{{ MYSQL_ADMIN_USER }}"
+    login_password: "{{ MYSQL_ADMIN_PASS }}"
+  become_user: "{{ user }}"
+
+# Removes all anonymous user accounts
+- mysql_user:
+    name: ''
+    host_all: yes
+    state: absent
+    login_host: '127.0.0.1'
+    login_user: "{{ MYSQL_ADMIN_USER }}"
+    login_password: "{{ MYSQL_ADMIN_PASS }}"
+  become_user: "{{ user }}"
+
+- name: Allow login from outside the localhost
+  become_user: "{{ user }}"
+  lineinfile:
+     dest="/app01/db/mysql/mysql/my.cnf"
+     regexp='^bind-address'
+     line='bind-address=0.0.0.0'
+  register: mycnf
+
+- name: Restart mysql
+  shell: /app01/db/mysql/ctlscript.sh restart 
+  become_user: "{{ user }}"
+  when: mycnf.changed
+
+################ INTEGRATOR ##########################################################################
+
+- name: Create a new database with name 'regdb' to registry.
+  mysql_db:
+    name: "{{ REG_DB_NAME }}"
+    state: present
+ #   login_host: "{{ DB_ADDRESS }}"
+    login_user: "{{ MYSQL_ADMIN_USER }}"
+    login_password: "{{ MYSQL_ADMIN_PASS }}"
+    encoding: latin1
+    collation: latin1_general_ci
+    config_file: "/app01/db/mysql/mysql/my.cnf"
+  become_user: "{{ user }}"
+
+# Create regadmin user add it to regdb with admin privileges 
+- mysql_user:
+    name: "{{ REG_DB_USER }}"
+    host: "{{ ALLOWED_CLIENTS | default('127.0.0.1') }}"
+    password: "{{ REG_DB_PASS }}"
+    append_privs: yes
+    priv: '{{ REG_DB_NAME }}.*:ALL,GRANT'
+    state: present
+    login_host: "127.0.0.1"
+    login_user: "{{ MYSQL_ADMIN_USER }}"
+    login_password: "{{ MYSQL_ADMIN_PASS }}"
+#    config_file: "/app01/db/mysql/mysql/my.cnf"
+  become_user: "{{ user }}"
+
+################ INTEGRATOR: MSG-BROKER ###############################################################
+
+- name: Create new database to wso2 msg-broker
+  mysql_db:
+    name: "{{ item.db }}"
+    state: present
+#    login_host: 127.0.0.1
+    login_user: "{{ MYSQL_ADMIN_USER }}"
+    login_password: "{{ MYSQL_ADMIN_PASS }}"
+    encoding: latin1
+    collation: latin1_general_ci
+    config_file: "/app01/db/mysql/mysql/my.cnf"
+  with_items:
+    - { db: WSO2MB_DB }
+  become_user: "{{ user }}"
+  when: PRODUCT_NAME == "msg-broker"
+
+# Create DB users add it to wso2 msg-broker DB with admin privileges
+- mysql_user:
+    name: "{{ item.user }}"
+    host: "{{ ALLOWED_CLIENTS | default('127.0.0.1') }}"
+    password: "{{ item.pass }}"
+    append_privs: yes
+    priv: '{{ item.db }}.*:ALL,GRANT'
+    state: present
+    login_host: "127.0.0.1"
+    login_user: "{{ MYSQL_ADMIN_USER }}"
+    login_password: "{{ MYSQL_ADMIN_PASS }}"
+  with_items:
+    - { db: WSO2MB_DB, user: "{{ WSO2MB_DB_USER }}", pass: "{{ WSO2MB_DB_PASS }}" }
+  become_user: "{{ user }}"
+  when: PRODUCT_NAME == "msg-broker"
+
+
+################## API-MGR ###########################################################################
+
+- name: Create new databases to wso2 api-manager
+  mysql_db:
+    name: "{{ item.db }}"
+    state: present
+#    login_host: 127.0.0.1
+    login_user: "{{ MYSQL_ADMIN_USER }}"
+    login_password: "{{ MYSQL_ADMIN_PASS }}"
+    encoding: latin1
+    collation: latin1_general_ci
+    config_file: "/app01/db/mysql/mysql/my.cnf"
+  with_items:
+    - { db: WSO2AM_DB }
+    - { db: WSO2AM_STATS_DB }
+    - { db: WSO2MB_STORE_DB }
+  become_user: "{{ user }}"
+  when: PRODUCT_FLAG == "api-mgr"
+
+# Create DB users add it to wso2 api-manager DBs with admin privileges
+- mysql_user:
+    name: "{{ item.user }}"
+    host: "{{ ALLOWED_CLIENTS | default('127.0.0.1') }}"
+    password: "{{ item.pass }}"
+    append_privs: yes
+    priv: '{{ item.db }}.*:ALL,GRANT'
+    state: present
+    login_host: "127.0.0.1"
+    login_user: "{{ MYSQL_ADMIN_USER }}"
+    login_password: "{{ MYSQL_ADMIN_PASS }}"
+  with_items:
+    - { db: wso2am_db, user: "{{ WSO2AM_DB_USER }}", pass: "{{ WSO2AM_DB_PASS }}" }
+    - { db: wso2am_stats_db, user: "{{ WSO2AM_STATS_DB_USER }}", pass: "{{ WSO2AM_STATS_DB_PASS }}" }
+    - { db: wso2mb_store_db, user: "{{ WSO2MB_STORE_DB_USER }}", pass: "{{ WSO2MB_STORE_DB_PASS }}" }
+  become_user: "{{ user }}"
+  when: PRODUCT_FLAG == "api-mgr"
+
+#######################################################################################################
+

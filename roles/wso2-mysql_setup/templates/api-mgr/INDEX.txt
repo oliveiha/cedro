@@ -1,0 +1,33 @@
+# PATH of the files to be replaced under <PRODUCT_HOME>/repository/conf:
+
+./identity/identity.xml:333:                <Location>${carbon.home}/repository/resources/security/wso2carbon.jks</Location>
+./identity/EndpointConfig.properties:21:client.keyStore=./repository/resources/security/wso2carbon.jks
+./identity/EndpointConfig.properties:23:client.trustStore=./repository/resources/security/client-truststore.jks
+./identity/application-authentication.xml:96:			<Parameter name="TrustStorePath">/repository/resources/security/client-truststore.jks</Parameter>
+./broker.xml:55:                     <location>repository/resources/security/wso2carbon.jks</location>
+./broker.xml:59:                    <location>repository/resources/security/client-truststore.jks</location>
+./broker.xml:77:                    <location>repository/resources/security/wso2carbon.jks</location>
+./broker.xml:81:                    <location>repository/resources/security/client-truststore.jks</location>
+./tomcat/catalina-server.xml:76:                   keystoreFile="${carbon.home}/repository/resources/security/wso2carbon.jks"
+./data-bridge/data-agent-config.xml:24:        <!--<TrustSore>src/test/resources/client-truststore.jks</TrustSore>-->
+./data-bridge/data-agent-config.xml:48:        <!--<TrustSore>src/test/resources/client-truststore.jks</TrustSore>-->
+./data-bridge/data-bridge-config.xml:28:    <keyStoreLocation>${carbon.home}/repository/resources/security/wso2carbon.jks</keyStoreLocation>
+./axis2/axis2.xml:312:                <Location>repository/resources/security/wso2carbon.jks</Location>
+./axis2/axis2.xml:320:                <Location>repository/resources/security/client-truststore.jks</Location>
+./axis2/axis2.xml:339:                <Location>repository/resources/security/wso2carbon.jks</Location>
+./axis2/axis2.xml:347:                <Location>repository/resources/security/client-truststore.jks</Location>
+./axis2/axis2.xml:372:                <Location>repository/resources/security/wso2carbon.jks</Location>
+./axis2/axis2.xml:380:                <Location>repository/resources/security/client-truststore.jks</Location>
+./axis2/axis2.xml:499:                <Location>repository/resources/security/wso2carbon.jks</Location>
+./axis2/axis2.xml:507:                <Location>repository/resources/security/client-truststore.jks</Location>
+./axis2/axis2.xml:533:                <Location>repository/resources/security/wso2carbon.jks</Location>
+./axis2/axis2.xml:541:                <Location>repository/resources/security/client-truststore.jks</Location>
+./axis2/axis2.xml:554:                <Location>repository/resources/security/wso2carbon.jks</Location>
+./axis2/axis2.xml:562:                <Location>repository/resources/security/client-truststore.jks</Location>
+./axis2/axis2_TM.xml:260:                <Location>repository/resources/security/wso2carbon.jks</Location>
+./axis2/axis2_TM.xml:268:                <Location>repository/resources/security/client-truststore.jks</Location>
+./axis2/axis2_TM.xml:431:                <Location>repository/resources/security/wso2carbon.jks</Location>
+./axis2/axis2_TM.xml:439:                <Location>repository/resources/security/client-truststore.jks</Location>
+./carbon.xml:364:            <Location>${carbon.home}/repository/resources/security/wso2carbon.jks</Location>
+./carbon.xml:381:            <Location>${carbon.home}/repository/resources/security/client-truststore.jks</Location>
+

@@ -1,0 +1,76 @@
+[docker_swarm_manager]
+10.4.1.5 ansible_ssh_port=22 ansible_ssh_user=rbadmin ansible_ssh_pass=@WSXcde3$RF
+
+[docker_swarm_worker]
+10.4.2.4 ansible_ssh_port=22 ansible_ssh_user=rbadmin ansible_ssh_private_key_file=/etc/ansible/cluster-swarm.pem
+10.4.2.5 ansible_ssh_port=22 ansible_ssh_user=rbadmin ansible_ssh_private_key_file=/etc/ansible/cluster-swarm.pem
+10.4.1.4 ansible_ssh_port=22 ansible_ssh_user=rbadmin ansible_ssh_private_key_file=/etc/ansible/cluster-swarm.pem
+10.4.1.6 ansible_ssh_port=22 ansible_ssh_user=rbadmin ansible_ssh_private_key_file=/etc/ansible/cluster-swarm.pem
+
+[docker_swarm_manager:vars]
+ansible_sudo=yes
+ansible_ssh_user=rbadmin
+
+
+[docker_swarm_worker:vars]
+ansible_python_interpreter=/usr/bin/python3
+ansible_sudo=yes
+ansible_ssh_user=rbadmin
+
+[jump03]
+10.4.0.134 ansible_ssh_port=22 ansible_ssh_user=rbadmin ansible_ssh_private_key_file=/etc/ansible/cluster-swarm.pem
+
+[jump03:vars]
+ansible_python_interpreter=/usr/bin/python3
+ansible_sudo=yes
+ansible_ssh_user=rbadmin
+
+[oms-app]
+10.4.2.6 ansible_ssh_port=22 ansible_ssh_user=rbadmin ansible_ssh_pass=@WSXcde3$RFV
+
+
+
+
+ 
+
+[oms-db]
+10.4.3.6 ansible_ssh_port=22 ansible_ssh_user=rbadmin ansible_ssh_pass=@WSXcde3$RFV
+
+
+
+
+
+
+[webfeeder]
+10.4.2.7 ansible_ssh_port=22 ansible_ssh_user=rbadmin ansible_ssh_pass=@WSXcde3$RFV
+
+[webfeeder:vars]
+ansible_python_interpreter=/usr/bin/python3
+ansible_sudo=yes
+ansible_ssh_user=rbadmin
+
+
+[wso2-apim]
+10.4.5.6 ansible_ssh_port=22 ansible_ssh_user=rbadmin ansible_ssh_pass=@WSXcde3$RF
+
+[wso2-apim:vars]
+ansible_python_interpreter=/usr/bin/python3
+ansible_sudo=yes
+ansible_ssh_user=rbadmin
+
+[wso2-integrator]
+10.4.5.4 ansible_ssh_port=22 ansible_ssh_user=rbadmin ansible_ssh_pass=@WSXcde3$RF
+
+[wso2-integrator:vars]
+ansible_python_interpreter=/usr/bin/python3
+ansible_sudo=yes
+ansible_ssh_user=rbadmin
+
+[wso2-bd]
+10.4.3.8 ansible_ssh_port=22 ansible_ssh_user=rbadmin ansible_ssh_pass=@WSXcde3$RF
+
+[wso2-bd:vars]
+ansible_python_interpreter=/usr/bin/python3
+ansible_sudo=yes
+ansible_ssh_user=rbadmin
+

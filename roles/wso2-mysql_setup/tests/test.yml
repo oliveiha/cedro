@@ -1,0 +1,45 @@
+- hosts: "{{ TARGET_HOSTS | default('local') }}"
+  vars:
+    user: "{{ ansible_env.USER }}"
+#    PRODUCT_FLAG: "{{ ansible_env.PRODUCT_FLAG }}"
+#    PRODUCT_NAME: "{{ ansible_env.PRODUCT_NAME }}"
+    PRODUCT_HOME: "/app01/wso2/{{ PRODUCT_NAME }}"
+    PRODUCT_USER: "{{ PRODUCT_NAME }}-admin"
+    PRODUCT_USER_PASS: "{{ PUPASS }}"
+    WSO2_USER: "{{ PRODUCT_USER }}"
+    WSO2_PASS: "{{ PRODUCT_USER_PASS}}"
+    MYSQL_ADMIN_USER: root
+    MYSQL_ADMIN_PASS: "{{ DB_PASS }}"
+#    DB_ADDRESS:
+
+    REG_DB_NAME: "{{ PRODUCT_NAME }}_regdb"
+    REG_DB_USER: dbadmin
+    REG_DB_PASS: "{{ DB_PASS }}"
+    REG_DB_URL: "jdbc:mysql://{{ DB_ADDRESS }}:3306/{{ REG_DB_NAME }}"
+
+############################# API-MGR #######################################
+
+    WSO2AM_DB_URL: "jdbc:mysql://{{ DB_ADDRESS }}:3306/wso2am_db"
+    WSO2AM_DB_USER: dbadmin
+    WSO2AM_DB_PASS: "{{ REG_DB_PASS }}"
+
+    WSO2AM_STATS_DB_URL: "jdbc:mysql://{{ DB_ADDRESS }}:3306/wso2am_stats_db"
+    WSO2AM_STATS_DB_USER: dbadmin
+    WSO2AM_STATS_DB_PASS: "{{ REG_DB_PASS }}"
+
+    WSO2MB_STORE_DB_URL: "jdbc:mysql://{{ DB_ADDRESS }}:3306/wso2mb_store_db"
+    WSO2MB_STORE_DB_USER: dbadmin
+    WSO2MB_STORE_DB_PASS: "{{ REG_DB_PASS }}"
+
+############################## MSG-BROKER ###################################
+
+    WSO2MB_DB_URL: "jdbc:mysql://{{ DB_ADDRESS }}:3306/wso2mb_db"
+    WSO2MB_DB_USER: dbadmin
+    WSO2MB_DB_PASS: "{{ REG_DB_PASS }}"
+
+#############################################################################
+
+    DB_DRIVER: com.mysql.jdbc.Driver
+
+  roles:
+    - { role: mysql_setup }

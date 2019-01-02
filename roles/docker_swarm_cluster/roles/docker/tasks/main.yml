@@ -1,0 +1,50 @@
+---
+ 
+  - name: Realizando apt-get update
+    become: true
+    become_user: root
+    become_method: sudo
+    apt: update_cache=yes
+  
+  - name: Atualizando o Time zona America/ Sao Paulo
+    become: true
+    become_user: root
+    become_method: sudo
+    timezone:
+      name: America/Sao_Paulo  
+
+  - name: Install list of packages
+    become: true
+    become_user: root
+    become_method: sudo
+    apt:
+      name: "{{ item }}"
+      state: installed
+    with_items:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - python-pip
+       
+  - name: Instalando a versão mais recente do Docker
+    become: true
+    become_user: root
+    become_method: sudo
+    shell: curl -sS https://get.docker.com | sh
+
+  - name: Start serviço do Docker
+    become: true
+    become_user: rbadmin
+    become_method: sudo
+    service: name=docker state=started
+
+  - name: Verificando se grupo Docker esta presente
+    group:
+      name: docker
+      state: present
+
+  
+    
+    
+   

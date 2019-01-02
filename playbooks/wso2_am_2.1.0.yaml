@@ -1,0 +1,75 @@
+---
+  - name: Install WSO2 AM 2.1.0
+    hosts: wso2 server
+    become: false
+
+    vars:
+      am_hostname: "servidor wso2 apim"
+    
+    # Criado diretorio wso2
+    tasks:  
+      - name: Criando diretorio /var/cedro/wso2
+        file:
+          path: "{{ setup_path }}/"
+          state: directory
+          mode: 0775
+   
+    # Tarefas Java 
+    tasks:
+      - name: Copiando jdk-8u144 para /var/cedro/wso2
+        copy:      
+          src: files/jdk-8u144-linux-x64.tar.gz
+          dest: "{{ setup_path }}/"
+      
+      - name: renomeando pacote jdk
+        stat: path= "{{ setup_path }}/jdk-8u144-linux-x64.tar.gz"
+        register: java.tar.gz
+      
+      - name: descompactando jdk-8u144-linux-x64.tar.gz
+        unarchive: src= "{{setup_path}}/java.tar.gz"
+                   dest=/usr/local/      
+
+    # variaveis de ambiente java /usr/local/java
+    environment:
+      JAVA_HOME: /usr/local/java
+      PATH: PATH=$PATH:$JAVA_HOME
+
+    # Task list
+    tasks:
+      # -
+        # name: teste instalação mysql local (ambientes de dev)
+        # apt:
+        #   name: postgres-client
+        #   state: present
+        
+      - name: Copiando pacote wso2 para /var/cedro/wso2
+        copy:
+          src: files/wso2am-2.1.0.zip
+          dest: "{{ setup_path }}/"
+      
+      - name: Descompactando wso2.zip
+        unarchive:
+          src: "{{ setup_path }}/wso2am-2.1.0.zip"
+          dest: "{{ setup_path }}"
+          
+      - name: Copiando Carbon.xml
+        template:
+          src: templates/carbon-home/repository/conf/carbon.xml.j2
+          dest: "{{ setup_path }}/wso2am-2.1.0/conf/carbon.xml"
+      
+      - name: Copia api-manager.xml
+        template:
+          src: templates/carbon-home/repository/conf/api-manager.xml.j2
+          dest: "{{ setup_path }}/wso2am-2.1.0/conf/api-manager.xml"
+      
+      - name: Copia e Configura datasources.xml
+        template:
+          src: templates/carbon-home/repository/conf/datasources/master-datasources.xml.j2
+          dest: "{{ setup_path }}/wso2am-2.1.0/conf/repository/datasources/master-datasources.xml     
+          
+      
+      - name: Start WSO2 AM
+        shell: "bash wso2server.sh &"
+        args:
+          chdir: "{{ setup_path }}/wso2am-2.1.0/bin/"
+          executable: "/bin/bash"

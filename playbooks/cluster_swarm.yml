@@ -1,0 +1,15 @@
+---
+ - name: Configurando Managers
+   hosts: docker_swarm_manager
+
+   roles:
+     - docker
+     - manager
+     - portainer
+
+ - name: Configurando Workers
+   hosts: docker_swarm_worker
+   
+   roles:
+    - docker
+    - worker
